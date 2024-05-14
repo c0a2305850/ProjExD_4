@@ -222,6 +222,26 @@ class Enemy(pg.sprite.Sprite):
         self.rect.centery += self.vy
 
 
+class Gravity(pg.sprite.Sprite):
+    """
+    重力場に関するクラス
+    """
+    
+    def __init__(self, life):
+        super().__init__()
+        self.life = life
+        self.image = pg.Surface((WIDTH, HEIGHT))
+        self.rect = self.image.get_rect()
+        self.rect.center = (WIDTH/2, HEIGHT/2)
+        pg.draw.rect(self.image, (128, 128, 128), (0, 0, WIDTH, HEIGHT))
+        self.image.set_alpha(128)
+
+    def update(self):
+        self.life -= 1
+        if self.life < 0:
+            self.kill()
+        
+
 class Score:
     """
     打ち落とした爆弾，敵機の数をスコアとして表示するクラス
@@ -240,7 +260,6 @@ class Score:
         self.image = self.font.render(f"Score: {self.value}", 0, self.color)
         screen.blit(self.image, self.rect)
 
-
 def main():
     pg.display.set_caption("真！こうかとん無双")
     screen = pg.display.set_mode((WIDTH, HEIGHT))
@@ -252,6 +271,7 @@ def main():
     beams = pg.sprite.Group()
     exps = pg.sprite.Group()
     emys = pg.sprite.Group()
+    gvts = pg.sprite.Group()
 
     tmr = 0
     clock = pg.time.Clock()
@@ -262,6 +282,9 @@ def main():
                 return 0
             if event.type == pg.KEYDOWN and event.key == pg.K_SPACE:
                 beams.add(Beam(bird))
+            if event.type == pg.KEYDOWN and event.key == pg.K_RETURN: #and score > 200
+                gvts.add(Gravity(400))
+                score.value -= 200
         screen.blit(bg_img, [0, 0])
 
         if tmr%200 == 0:  # 200フレームに1回，敵機を出現させる
@@ -280,6 +303,11 @@ def main():
         for bomb in pg.sprite.groupcollide(bombs, beams, True, True).keys():
             exps.add(Explosion(bomb, 50))  # 爆発エフェクト
             score.value += 1  # 1点アップ
+        
+        for bomb in pg.sprite.groupcollide(bombs, gvts, True, False).keys():
+            bird.change_img(8, screen)
+            exps.add(Explosion(bomb, 50))
+            pg.display.update()
 
         if len(pg.sprite.spritecollide(bird, bombs, True)) != 0:
             bird.change_img(8, screen) # こうかとん悲しみエフェクト
@@ -297,6 +325,8 @@ def main():
         bombs.draw(screen)
         exps.update()
         exps.draw(screen)
+        gvts.draw(screen)
+        gvts.update()
         score.update(screen)
         pg.display.update()
         tmr += 1
