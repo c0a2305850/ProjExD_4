@@ -323,7 +323,7 @@ def main():
                 if score.value > 20:
                     emp.add(Emp(emys, bombs, screen))
                     score.value -= 20
-            if event.type == pg.KEYDOWN and event.key == pg.K_RETURN: #and score > 200
+            if event.type == pg.KEYDOWN and event.key == pg.K_RETURN and score.value > 200:
                 gvts.add(Gravity(400))
                 score.value -= 200
         screen.blit(bg_img, [0, 0])
