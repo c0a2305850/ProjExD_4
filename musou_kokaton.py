@@ -71,10 +71,6 @@ class Bird(pg.sprite.Sprite):
         self.image = self.imgs[self.dire]
         self.rect = self.image.get_rect()
         self.rect.center = xy
-        # if pg.K_LSHIFT:
-        #     self.speed = 20
-        # else:
-        #     self.speed = 10
         self.speed = 10
         self.state = "normal"
         self.hyper_life = 0
@@ -332,7 +328,7 @@ def main():
                 if score.value > 20:
                     emp.add(Emp(emys, bombs, screen))
                     score.value -= 20
-            if event.type == pg.KEYDOWN and event.key == pg.K_RETURN: #and score > 200
+            if event.type == pg.KEYDOWN and event.key == pg.K_RETURN and score.value > 200:
                 gvts.add(Gravity(400))
                 score.value -= 200
         screen.blit(bg_img, [0, 0])
